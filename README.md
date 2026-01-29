@@ -1,6 +1,6 @@
-# AuDHDioPrism
+# AuDioPrism
 
-**AuDHDioPrism** (or simply **Prism**) is a Chrome Extension designed to transform your YouTube Music experience into a neurodivergent-friendly, immersive auditory environment. It combines an 8D spatial audio processor with binaural beats, isochronic tones, and sensory-friendly audio processing to help with focus, relaxation, and sensory regulation.
+**AuDioPrism** (or simply **Prism**) is a Chrome Extension designed to transform your YouTube Music experience into a neurodivergent-friendly, immersive auditory environment. It combines an 8D spatial audio processor with binaural beats, isochronic tones, and sensory-friendly audio processing to help with focus, relaxation, and sensory regulation.
 
 > "Bad audio is a hate crime." — This extension is built with that philosophy. Every audio module is research-backed and carefully tuned for quality.
 
@@ -170,7 +170,7 @@ This extension is built for **Google Chrome** (Manifest V3).
 ## How to Use
 
 1. Open [music.youtube.com](https://music.youtube.com) and start playing a track.
-2. Click the **AuDHDioPrism icon** in your Chrome toolbar.
+2. Click the **AuDioPrism icon** in your Chrome toolbar.
 3. Click **"Launch Prism"** in the popup.
 4. A floating trigger button (▲) appears at the bottom right. Click to open the control panel.
 5. **Use headphones** for binaural beats and optimal 8D audio effect.
