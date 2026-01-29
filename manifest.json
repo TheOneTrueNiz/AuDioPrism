@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "AuDHDioPrism",
+  "version": "2.0",
+  "description": "8D Spatial Audio & Neuro-Acoustic Focus Engine for YouTube Music",
+  "icons": {
+    "128": "icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png"
+  },
+  "action": {
+    "default_title": "Launch Prism",
+    "default_popup": "popup.html",
+    "default_icon": "icons/prism-icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://music.youtube.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "permissions": [
+    "tabCapture",
+    "offscreen",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "storage",
+    "identity"
+  ],
+  "host_permissions": [
+    "https://www.googleapis.com/*"
+  ],
+  "oauth2": {
+    "client_id": "YOUR_CLIENT_ID_HERE.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/youtube.readonly"
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js", "icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png"],
+      "matches": ["*://music.youtube.com/*"]
+    }
+  ]
+}
