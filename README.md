@@ -10,8 +10,8 @@ It is GPL-3.0. No subscription. If someone is charging monthly for this class of
 
 ## Screenshots
 
-![AuDioPrism Screenshot 1](screenshots/Screenshot_2026-02-06_00-15-55.png)
-![AuDioPrism Screenshot 2](screenshots/Screenshot_2026-02-06_00-16-15.png)
+![AuDioPrism mixer on YouTube Music](screenshots/mixer.png)
+![AuDioPrism launcher on a YouTube Music playlist](screenshots/launcher.png)
 
 ## Features
 
