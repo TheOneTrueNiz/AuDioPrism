@@ -5,96 +5,132 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root {
-      --bg: #07080b;
-      --accent: #2af6ff;
-      --accent-2: #ffd166;
-      --text: #eaf2f2;
-      --muted: #93a6b5;
-      --danger: #ff6b6b;
-      --font-tech: "Space Grotesk", "Sora", "Avenir Next", "Futura", "Gill Sans", "Trebuchet MS", sans-serif;
+      --md-primary: #c084fc;
+      --md-on-primary: #2a1248;
+      --md-accent: #5ee9f2;
+      --md-on-surface: #f4f0fb;
+      --md-on-variant: #c4b8d4;
+      --md-error: #ffb4ab;
+      --font: "Roboto", "YouTube Sans", "Segoe UI", system-ui, sans-serif;
     }
     * { box-sizing: border-box; }
+    html { background: transparent; }
     body {
       width: 280px;
-      height: 440px;
       margin: 0;
+      padding: 18px 18px 16px;
       background:
-        radial-gradient(circle at 20% 20%, rgba(42, 246, 255, 0.18), transparent 45%),
-        radial-gradient(circle at 80% 10%, rgba(255, 209, 102, 0.15), transparent 45%),
-        linear-gradient(160deg, #050607 0%, #0a1220 60%, #050607 100%);
-      color: var(--text);
-      font-family: var(--font-tech);
+        radial-gradient(circle at 12% 0%, rgba(192, 132, 252, 0.28), transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(94, 233, 242, 0.08), transparent 42%),
+        rgba(8, 5, 14, 0.78);
+      color: var(--md-on-surface);
+      font-family: var(--font);
+      backdrop-filter: blur(32px) saturate(1.6);
+      -webkit-backdrop-filter: blur(32px) saturate(1.6);
+    }
+    .brand {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .brand img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.5));
+    }
+    .brand-word {
+      font-size: 20px;
+      font-weight: 750;
+      letter-spacing: 0.01em;
+      line-height: 1;
+      background: linear-gradient(90deg, #e9d5ff 0%, #c084fc 40%, #e879f9 72%, #5ee9f2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .brand-word span { font-weight: 650; }
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       text-align: center;
-      padding: 22px;
-      box-sizing: border-box;
-    }
-    h1 {
-      font-weight: 600;
-      letter-spacing: 0.4em;
-      margin-bottom: 26px;
-      text-transform: uppercase;
-      font-size: 1.1rem;
-      color: var(--accent);
-    }
-    .btn {
-      background: rgba(8, 12, 18, 0.8);
-      border: 1px solid rgba(42, 246, 255, 0.4);
-      color: var(--accent);
-      padding: 12px 18px;
-      margin: 8px 0;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      transition: 0.2s ease;
-      width: 100%;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    }
-    .btn:hover {
-      background: rgba(42, 246, 255, 0.15);
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-    .btn-danger {
-      border-color: rgba(255, 107, 107, 0.6);
-      color: var(--danger);
-    }
-    .btn-danger:hover {
-      background: rgba(255, 107, 107, 0.15);
-      border-color: var(--danger);
+      color: var(--md-on-variant);
     }
     .status {
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-    .status.error { color: var(--danger); }
-    .logo-container {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 18px;
+      gap: 8px;
+      margin: 0 0 14px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--md-on-variant);
     }
-    .logo-icon {
-      width: 235px;
-      height: auto;
+    .status .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6b7780;
+    }
+    .status.live { color: var(--md-accent); }
+    .status.live .dot {
+      background: var(--md-accent);
+      box-shadow: 0 0 8px var(--md-accent);
+    }
+    .status.error { color: var(--md-error); }
+    .status.error .dot { background: var(--md-error); }
+    .btn {
+      display: block;
+      width: 100%;
+      height: 40px;
+      margin: 0 0 10px;
+      border: none;
+      border-radius: 20px;
+      font: 600 14px var(--font);
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:focus-visible { outline: 2px solid var(--md-accent); outline-offset: 2px; }
+    .btn-primary {
+      background: linear-gradient(180deg, #d4b4ff, var(--md-primary));
+      color: var(--md-on-primary);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 18px rgba(192, 132, 252, 0.32);
+    }
+    .btn-primary:hover { background: #e9d5ff; }
+    .btn-stop {
+      background: transparent;
+      color: var(--md-error);
+      border: 1px solid color-mix(in srgb, var(--md-error) 55%, transparent);
+    }
+    .btn-stop:hover { background: rgba(255, 180, 171, 0.1); }
+    .hint {
+      margin: 4px 0 0;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--md-on-variant);
     }
   </style>
 </head>
 <body>
-  <div class="logo-container">
-    <img src="icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png" alt="AuDioPrism" class="logo-icon">
+  <div class="brand">
+    <img src="icons/prism-icon.png" alt="">
+    <div class="brand-word">Au<span>Dio</span>Prism</div>
   </div>
-  <button id="btnStart" class="btn">Activate System</button>
-  <button id="btnStop" class="btn btn-danger">Deactivate System</button>
-  <div class="status" id="status-text">Neuro Acoustic Focus</div>
+  <p class="eyebrow">Neuro-acoustic mixer</p>
+  <div class="status" id="status-text"><span class="dot"></span><span id="status-label">Idle</span></div>
+  <button id="btnStart" class="btn btn-primary" type="button">Open mixer</button>
+  <button id="btnStop" class="btn btn-stop" type="button">Stop engine</button>
+  <p class="hint" id="hint">Open YouTube Music, then start the engine.</p>
   <script src="popup.js"></script>
 </body>
 </html>

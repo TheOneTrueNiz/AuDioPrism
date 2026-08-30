@@ -1,35 +1,75 @@
 const statusEl = document.getElementById('status-text');
-const setStatus = (msg, isError = false) => {
+const statusLabel = document.getElementById('status-label');
+const hintEl = document.getElementById('hint');
+
+const setStatus = (msg, kind = '') => {
   if (!statusEl) return;
-  statusEl.textContent = msg;
-  statusEl.classList.toggle('error', isError);
+  statusLabel.textContent = msg;
+  statusEl.classList.toggle('live', kind === 'live');
+  statusEl.classList.toggle('error', kind === 'error');
+  if (!hintEl || kind === 'error') return;
+  hintEl.textContent = kind === 'live'
+    ? 'Closing the mixer does not stop processing.'
+    : 'Open YouTube Music, then start the engine.';
 };
+
+async function activeTab() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tab;
+}
+
+async function refreshState() {
+  try {
+    const state = await chrome.runtime.sendMessage({ type: 'GET_STATE' });
+    if (state && state.engineOn) setStatus('Live', 'live');
+    else setStatus('Idle');
+  } catch (_) {
+    setStatus('Idle');
+  }
+}
+
+const UI_VERSION = '2.2.7';
+
+async function openMixerOnTab(tab) {
+  let stale = true;
+  try {
+    const ping = await chrome.tabs.sendMessage(tab.id, { type: 'PING_UI' });
+    stale = !ping || ping.version !== UI_VERSION;
+  } catch (_) {
+    stale = true;
+  }
+  if (stale) {
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['defaults.js', 'content.js']
+    });
+  }
+  await chrome.tabs.sendMessage(tab.id, { type: 'OPEN_OVERLAY' });
+}
 
 document.getElementById('btnStart').addEventListener('click', async () => {
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab || !tab.url.includes('music.youtube.com')) {
-      setStatus('Open YouTube Music first', true);
+    const tab = await activeTab();
+    if (!tab || !tab.url || !tab.url.includes('music.youtube.com')) {
+      setStatus('Open YouTube Music first', 'error');
       return;
     }
-
-    // Toggle the Venom Overlay
-    chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
-    
+    await openMixerOnTab(tab);
     window.close();
   } catch (e) {
-    setStatus('Popup error: ' + e.toString(), true);
+    setStatus(String(e.message || e), 'error');
   }
 });
+
 document.getElementById('btnStop').addEventListener('click', async () => {
-  chrome.runtime.sendMessage({ type: 'STOP_PRISM' });
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab) {
-      chrome.tabs.sendMessage(tab.id, { type: 'FORCE_DEACTIVATE' });
-    }
+    await chrome.runtime.sendMessage({ type: 'STOP_PRISM' });
+    const tab = await activeTab();
+    if (tab) chrome.tabs.sendMessage(tab.id, { type: 'FORCE_DEACTIVATE' }).catch(() => {});
+    window.close();
   } catch (e) {
-    console.error('Stop error:', e);
+    setStatus(String(e.message || e), 'error');
   }
-  window.close();
 });
+
+refreshState();

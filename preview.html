@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AuDioPrism mixer preview</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #111; }
+    body {
+      background:
+        linear-gradient(180deg, #0a0a0a 0%, #111 40%),
+        #111;
+      font-family: Roboto, system-ui, sans-serif;
+    }
+    #ytm-fake {
+      position: fixed; inset: 0;
+      background: #0a0a0a;
+      color: #aaa;
+      padding: 24px 40px;
+      font-size: 14px;
+    }
+    #test-report {
+      position: fixed; left: 12px; bottom: 12px; z-index: 2147483647;
+      max-width: 420px; max-height: 40vh; overflow: auto;
+      background: rgba(0,0,0,0.72); color: #d4ffd4;
+      font: 12px/1.4 ui-monospace, monospace;
+      padding: 10px 12px; border-radius: 10px;
+      pointer-events: none;
+      white-space: pre-wrap;
+    }
+    #test-report.fail { color: #ffc9c2; }
+    body.shot #test-report { display: none; }
+    body.shot #ytm-fake {
+      background:
+        radial-gradient(circle at 18% 28%, #6d28d9 0%, transparent 36%),
+        radial-gradient(circle at 82% 18%, #155e75 0%, transparent 32%),
+        radial-gradient(circle at 70% 80%, #9d174d 0%, transparent 28%),
+        #0a0a0a;
+    }
+  </style>
+</head>
+<body>
+  <div id="ytm-fake">YouTube Music stand-in — mixer should float over this.</div>
+  <ytmusic-player-bar>
+    <div class="title">Preview Track</div>
+    <div class="byline">Preview Artist</div>
+    <button id="play-pause-button" class="play-pause-button" aria-label="Play" title="Play">Play</button>
+    <button class="previous-button" aria-label="Previous">Prev</button>
+    <button class="next-button" aria-label="Next">Next</button>
+    <span class="time-info">0:58 / 4:00</span>
+  </ytmusic-player-bar>
+  <pre id="test-report">running…</pre>
+  <script>
+    window.PRISM_PREVIEW = true;
+    window.__prismLog = [];
+    window.chrome = {
+      runtime: {
+        getURL: (p) => p,
+        lastError: null,
+        sendMessage: (msg, cb) => {
+          window.__prismLog.push(JSON.parse(JSON.stringify(msg)));
+          let res = { ok: true };
+          if (msg && msg.type === 'GET_STATE') res = { engineOn: true };
+          if (msg && msg.type === 'START_PRISM_SILENT') res = { ok: true, already: true };
+          if (typeof cb === 'function') {
+            queueMicrotask(() => cb(res));
+            return;
+          }
+          return Promise.resolve(res);
+        },
+        onMessage: { addListener() {} }
+      },
+      storage: {
+        local: {
+          get: (_k, cb) => cb({}),
+          set: () => {}
+        }
+      }
+    };
+  </script>
+  <script src="defaults.js"></script>
+  <script src="content.js"></script>
+  <script>
+    (function runTests() {
+      const report = document.getElementById('test-report');
+      if (/[?&]shot=/.test(location.search)) {
+        document.body.classList.add('shot');
+        report.remove();
+        if (window.__PRISM__) {
+          window.__PRISM__.applyPreset('focus');
+          window.__PRISM__.onMeter({ rms: 0.22, peak: 0.48 });
+          if (/menu/.test(location.search)) window.__PRISM__.menus.bin.open();
+        }
+        return;
+      }
+      const P = window.__PRISM__;
+      const fails = [];
+      const passes = [];
+      function ok(name, cond, extra) {
+        if (cond) passes.push(name);
+        else fails.push(name + (extra ? ' — ' + extra : ''));
+      }
+
+      if (!P) {
+        report.className = 'fail';
+        report.textContent = 'FAIL: __PRISM__ missing';
+        document.title = 'FAIL';
+        document.body.dataset.test = 'fail';
+        return;
+      }
+
+      ok('boot depth 0.55', Math.abs(P.model.knobs['k-depth'] - 0.55) < 1e-9, String(P.model.knobs['k-depth']));
+      ok('boot compressor on', P.model.toggles.compressor === true);
+      ok('boot binaural off', P.model.toggles.binaural === false);
+      ok('boot beta 14', P.model.params.binaural_beatFreq === 14, String(P.model.params.binaural_beatFreq));
+      ok('boot filter 12k', Math.abs(P.model.knobs['k-filter-freq'] - 12000) < 1, String(P.model.knobs['k-filter-freq']));
+
+      const overlay = P.shadow.getElementById('prism-overlay');
+      ok('fab is svg mark', !!P.shadow.querySelector('#unified-trigger svg') && !P.shadow.querySelector('#unified-trigger img'));
+      P.applyFabPos(48, 96, { save: false });
+      const fab = P.shadow.getElementById('unified-trigger');
+      ok('fab draggable', fab.classList.contains('placed') && fab.style.left === '48px' && fab.style.top === '96px');
+      ok('panel open', overlay && overlay.classList.contains('open'));
+      ok('live chip', P.shadow.getElementById('status-chip').classList.contains('live'));
+
+      const knobIds = Object.keys(P.model.knobs).filter((id) => P.knobs[id]);
+      const faderIds = ['k-music-vol', 'k-fx-vol', 'k-eq-low', 'k-eq-mid', 'k-eq-high'];
+      knobIds.forEach((id) => ok('knob ' + id, !!P.knobs[id] && !!P.knobs[id].el));
+      faderIds.forEach((id) => ok('fader ' + id, !!P.faders[id] && !!P.faders[id].el));
+      ok('menus', !!(P.menus.shape && P.menus.bin && P.menus.iso));
+
+      Object.keys(P.TOGGLE_MAP).forEach((id) => {
+        ok('toggle ' + id, !!P.shadow.getElementById(id));
+      });
+
+      // Programmatic value plumbing
+      P.knobs['k-depth'].setValue(0.42, { send: true, flush: true });
+      ok('depth send', Math.abs(P.model.knobs['k-depth'] - 0.42) < 1e-6, String(P.model.knobs['k-depth']));
+      ok('depth message', window.__prismLog.some((m) => m.type === 'UPDATE_KNOB' && m.id === 'k-depth'));
+
+      P.faders['k-eq-low'].setValue(-7, { send: true, flush: true });
+      ok('eq low', Math.abs(P.model.knobs['k-eq-low'] + 7) < 1e-6);
+
+      P.setToggleUi('binaural', true, { send: true });
+      ok('binaural on', P.model.toggles.binaural === true);
+      ok('binaural msg', window.__prismLog.some((m) => m.type === 'TOGGLE_MODULE' && m.module === 'binaural' && m.active === true));
+      ok('binaural card', P.shadow.querySelector('.module[data-mod="binaural"]').classList.contains('on'));
+
+      P.menus.shape.setValue('tumble', { send: true });
+      ok('shape param', P.model.params.panner_shape === 'tumble');
+      ok('shape msg', window.__prismLog.some((m) => m.type === 'SET_PARAM' && m.module === 'panner' && m.param === 'shape' && m.value === 'tumble'));
+
+      P.menus.bin.setValue(6, { send: true });
+      ok('bin freq', P.model.params.binaural_beatFreq === 6);
+
+      // Log mapping: midpoint of filter should not be ~10k
+      const mid = P.fromNorm(0.5, 200, 20000, true);
+      ok('log freq mid ~2k', mid > 1500 && mid < 3000, String(mid));
+      P.knobs['k-filter-freq'].setValue(mid, { send: true, flush: true });
+      ok('filter stored', Math.abs(P.model.knobs['k-filter-freq'] - mid) < 1);
+
+      // Presets
+      P.applyPreset('focus');
+      ok('preset focus speed', Math.abs(P.model.knobs['k-speed'] - 0.15) < 1e-9);
+      ok('preset focus bin', P.model.toggles.binaural === true);
+      ok('preset focus shape', P.model.params.panner_shape === 'sine');
+      ok('preset chip', P.shadow.querySelector('[data-preset="focus"]').classList.contains('active'));
+      ok('preset snapshot msg', window.__prismLog.some((m) => m.type === 'SNAPSHOT' && m.snapshot && m.snapshot.preset === 'focus'));
+
+      P.applyPreset('clean');
+      ok('clean all off', Object.values(P.model.toggles).every((v) => v === false));
+      ok('clean eq 0', P.model.knobs['k-eq-low'] === 0 && P.model.knobs['k-eq-mid'] === 0);
+      ok('off card dimmed', P.shadow.querySelector('.module[data-mod="panner"]').classList.contains('off'));
+
+      P.applyPreset('sleep');
+      ok('sleep theta', P.model.params.binaural_beatFreq === 6);
+      ok('sleep menu label', P.menus.bin.labelFor(P.menus.bin.value).indexOf('Theta') !== -1);
+
+      // Pointer drag on depth knob
+      const before = P.model.knobs['k-depth'];
+      const el = P.knobs['k-depth'].el;
+      const r = el.getBoundingClientRect();
+      const x = r.left + r.width / 2, y = r.top + r.height / 2;
+      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 7, button: 0, pointerType: 'mouse' }));
+      el.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, cancelable: true, clientX: x, clientY: y - 80, pointerId: 7, button: 0, pointerType: 'mouse' }));
+      el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, clientX: x, clientY: y - 80, pointerId: 7, button: 0, pointerType: 'mouse' }));
+      ok('pointer drag changed depth', P.model.knobs['k-depth'] !== before, before + ' -> ' + P.model.knobs['k-depth']);
+
+      // Fader pointer
+      const fEl = P.faders['k-music-vol'].elHit;
+      const fr = fEl.getBoundingClientRect();
+      fEl.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, clientX: fr.left + fr.width / 2, clientY: fr.top + 8, pointerId: 8, button: 0, pointerType: 'mouse' }));
+      fEl.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, clientX: fr.left + fr.width / 2, clientY: fr.top + 8, pointerId: 8, button: 0, pointerType: 'mouse' }));
+      ok('fader click near top', P.model.knobs['k-music-vol'] > 1.1, String(P.model.knobs['k-music-vol']));
+
+      // Open custom menu (not clipped native select)
+      P.menus.shape.open();
+      ok('menu popover', !!P.shadow.querySelector('.menu-popover'));
+      const item = [...P.shadow.querySelectorAll('.menu-item')].find((n) => n.textContent.indexOf('Figure') !== -1);
+      if (item) item.click();
+      ok('menu pick figure 8', P.model.params.panner_shape === 'beat');
+      ok('menu closed', !P.shadow.querySelector('.menu-popover'));
+
+      // Meter
+      P.onMeter({ rms: 0.2, peak: 0.5 });
+      ok('meter api', true);
+
+      P.applyPreset('focus');
+      P.onMeter({ rms: 0.18, peak: 0.4 });
+
+      const playBtn = P.shadow.getElementById('btn-play');
+      const prevBtn = P.shadow.getElementById('btn-prev');
+      const nextBtn = P.shadow.getElementById('btn-next');
+      ok('transport buttons', !!(playBtn && prevBtn && nextBtn));
+
+      let playHits = 0, prevHits = 0, nextHits = 0;
+      const yPlay = document.getElementById('play-pause-button');
+      const yPrev = document.querySelector('.previous-button');
+      const yNext = document.querySelector('.next-button');
+      yPlay.addEventListener('click', () => {
+        playHits += 1;
+        const on = playHits % 2 === 1;
+        yPlay.setAttribute('aria-label', on ? 'Pause' : 'Play');
+        yPlay.setAttribute('title', on ? 'Pause' : 'Play');
+      });
+      yPrev.addEventListener('click', () => { prevHits += 1; });
+      yNext.addEventListener('click', () => { nextHits += 1; });
+
+      playBtn.click();
+      ok('play clicks YTM', playHits === 1, String(playHits));
+      P.syncPlayButton();
+      ok('play icon follows pause', playBtn.getAttribute('aria-label') === 'Pause', playBtn.getAttribute('aria-label'));
+
+      prevBtn.click();
+      nextBtn.click();
+      ok('prev clicks YTM', prevHits === 1, String(prevHits));
+      ok('next clicks YTM', nextHits === 1, String(nextHits));
+
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space', key: ' ', bubbles: true, cancelable: true }));
+      ok('space play/pause', playHits === 2, String(playHits));
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'BracketLeft', key: '[', bubbles: true, cancelable: true }));
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'BracketRight', key: ']', bubbles: true, cancelable: true }));
+      ok('brackets skip tracks', prevHits === 2 && nextHits === 2, prevHits + '/' + nextHits);
+
+      ok('now title scrape', P.shadow.getElementById('now-title').textContent === 'Preview Track');
+      ok('track time scrape', (P.shadow.getElementById('now-time').textContent || '').indexOf('0:58') !== -1, P.shadow.getElementById('now-time').textContent);
+      ok('seek bar', !!P.shadow.getElementById('track-progress') && !!P.shadow.getElementById('track-progress-fill'));
+      const kbd = P.shadow.getElementById('kbd-hint');
+      ok('keys popover closed', kbd && !kbd.classList.contains('open'));
+      P.shadow.getElementById('btn-keys').click();
+      ok('keys popover opens', kbd.classList.contains('open'));
+      ok('eq fader compact', P.shadow.querySelector('#f-eq-high .fader-val').textContent.indexOf('dB') === -1, P.shadow.querySelector('#f-eq-high .fader-val').textContent);
+
+      const lines = [];
+      lines.push((fails.length ? 'FAIL' : 'PASS') + `  ${passes.length} passed, ${fails.length} failed`);
+      fails.forEach((f) => lines.push('  ✗ ' + f));
+      if (!fails.length) lines.push('  all controls wired');
+      report.textContent = lines.join('\n');
+      report.className = fails.length ? 'fail' : '';
+      document.title = fails.length ? 'FAIL' : 'PASS';
+      document.body.dataset.test = fails.length ? 'fail' : 'pass';
+    })();
+  </script>
+</body>
+</html>

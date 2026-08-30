@@ -1,8 +1,10 @@
 # AuDioPrism
 
-**AuDioPrism** (or simply **Prism**) is a Chrome Extension designed to transform your YouTube Music experience into a neurodivergent-friendly, immersive auditory environment. It combines an 8D spatial audio processor with binaural beats, isochronic tones, and sensory-friendly audio processing to help with focus, relaxation, and sensory regulation.
+**AuDioPrism** (or simply **Prism**) is a free, open-source Chrome extension that turns YouTube Music into a neurodivergent-friendly listening space. 8D spatial audio, binaural beats, isochronic tones, masking noise, and sensory EQ — built for ADHD, autism, AuDHD, and anyone whose nervous system needs the mix to cooperate.
 
-> "Bad audio is a hate crime." — This extension is built with that philosophy. Every audio module is research-backed and carefully tuned for quality.
+It is GPL-3.0. No subscription. If someone is charging monthly for this class of tool, they can. We would rather ship it to the community.
+
+> "Bad audio is a hate crime." — Every module is tuned for quality first, then for regulation.
 
 ---
 
@@ -15,16 +17,19 @@
 
 ### 8D Spatial Audio Engine
 
-The core of Prism is a sophisticated HRTF (Head-Related Transfer Function) spatial audio engine that creates the immersive "8D audio" effect. Unlike simple left-right panning, HRTF processing simulates how sound reaches your ears from different positions in 3D space, accounting for the shape of your head and ears.
+The core of Prism is a click-free 8D spatializer: equal-power level difference, interaural time difference (~0.66 ms), and contralateral head-shadow filtering. That combination still reads as motion around the head without the zipper noise Chrome's HRTF kernels add when the source moves.
 
 **Movement Patterns:**
 
 | Pattern | Description | Best For |
 |---------|-------------|----------|
 | **Sine Orbit** | Classic circular movement around your head with subtle elevation changes | General listening, the signature "8D" experience |
-| **Figure 8** | Lemniscate pattern that crosses in front of you | Bilateral stimulation, EMDR-like benefits |
-| **Tumble** | Complex 3D spherical movement using three independent phases | Deep immersion, spatial exploration |
-| **Drift** | Organic, pseudo-random wandering using layered sine waves | Ambient listening, reduced predictability |
+| **Ping-pong** | Hard L/R jumps | Bilateral snaps, high stimulation |
+| **Figure 8** | Lemniscate that crosses in front of you twice per cycle | Bilateral stimulation, EMDR-like benefits |
+| **Pendulum** | Hangs at each ear, then swings | Slow rocking |
+| **Tumble** | Corkscrew: L/R and elevation are 90° apart, so the image rolls *over* your head at each center crossing | Deep immersion |
+| **Breathe** | Almost no L/R — the source moves closer (louder, brighter) and farther (quieter, darker) | Calm regulation, less seasick |
+| **Drift** | Irregular wander from value noise, not a stacked-sine orbit | Ambient listening, reduced predictability |
 
 **Controls:**
 - **Speed** (0.01 - 5 Hz): How fast the sound moves around you
@@ -164,21 +169,36 @@ This ensures the music remains the primary experience while the therapeutic tone
 
 ## Installation
 
-This extension is built for **Google Chrome** (Manifest V3).
+This extension is built for **Google Chrome** (Manifest V3). This repository *is* the unpacked extension — `manifest.json` is at the repo root.
 
-1. **Clone or Download** this repository to your local machine.
-2. Open Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer mode** (toggle in the top right corner).
+1. Clone this repository (or download the ZIP and unpack it).
+2. Open Chrome and go to `chrome://extensions/`.
+3. Enable **Developer mode**.
 4. Click **Load unpacked**.
-5. Select the `prism_extension` folder (containing `manifest.json`).
+5. Select **this folder** — the one that contains `manifest.json`.
+
+If the mixer UI looks old after a reload, refresh the YouTube Music tab so the content script actually updates.
 
 ## How to Use
 
 1. Open [music.youtube.com](https://music.youtube.com) and start playing a track.
-2. Click the **AuDioPrism icon** in your Chrome toolbar.
-3. Click **"Launch Prism"** in the popup.
-4. A floating trigger button (▲) appears at the bottom right. Click to open the control panel.
-5. **Use headphones** for binaural beats and optimal 8D audio effect.
+2. Click the **AuDioPrism icon** in the Chrome toolbar.
+3. Click **Open mixer**.
+4. A glass launcher appears on the page. **Click** it to start the engine / open the mixer. **Drag** it anywhere — the position is remembered.
+5. Close the mixer (X, Esc, or the dimmed edge) to get YouTube Music back — processing keeps running. Stop the engine from the power button or the popup.
+6. **Use headphones** for binaural beats and optimal 8D.
+
+The now-playing bar has **previous / play-pause / next**, real track time, and a seek bar. Those drive YouTube Music's player, so the queue, scrobble, and media keys stay in sync. **?** opens the shortcut list. With the mixer open:
+
+| Key | Action |
+|-----|--------|
+| **Space** | Play / pause |
+| **[** | Previous track |
+| **]** | Next track |
+| **A** (hold) | Dry compare |
+| **S** | Beat-sync 8D |
+| **1–5** | Presets |
+| **Esc** | Close mixer (engine keeps running) |
 
 ### Quick Start Recommendations
 
@@ -236,7 +256,7 @@ YouTube Music Audio
 ### Key Technologies
 
 - **Web Audio API**: All processing uses native browser audio nodes
-- **HRTF Panning**: Built-in Chrome HRTF for 3D spatialization
+- **Smooth 8D**: Equal-power ILD + ITD + head-shadow, scheduled on the audio clock
 - **Offscreen Document**: Audio processing runs in isolated context for stability
 - **Shadow DOM**: UI is encapsulated to avoid conflicts with YouTube Music
 
@@ -254,15 +274,16 @@ YouTube Music Audio
 ## Project Structure
 
 ```
-prism_extension/
-├── manifest.json        # Extension configuration (MV3)
-├── background.js        # Service worker, lifecycle management
-├── offscreen.html       # Audio processing document container
-├── audio-engine.js      # Core DSP: 8D, binaural, isochronic, etc.
-├── content.js           # UI injection, controls, styling
-├── popup.html/.js       # Extension popup (launch button)
-├── icons/               # Extension icons
-└── screenshots/         # UI screenshots for documentation
+├── manifest.json        # MV3 extension config (load this folder)
+├── defaults.js          # Shared boot patch (mixer + engine)
+├── background.js        # Service worker / capture lifecycle
+├── offscreen.html       # Audio engine document
+├── audio-engine.js      # DSP: 8D, binaural, isochronic, etc.
+├── spatial-motion.js    # 8D path math (tumble / breathe / drift)
+├── content.js           # Mixer UI (Shadow DOM)
+├── popup.html/.js       # Toolbar popup
+├── icons/
+└── screenshots/
 ```
 
 ---
