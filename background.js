@@ -110,33 +110,47 @@ async function stopEngine() {
     engineOn = false;
     capturingTabId = null;
 
-    const tabs = await chrome.tabs.query({ url: '*://music.youtube.com/*' });
+    const tabs = await queryPlayerTabs();
     for (const tab of tabs) {
         chrome.tabs.sendMessage(tab.id, { type: 'FORCE_DEACTIVATE' }).catch(() => {});
     }
 }
 
-async function injectIntoYtmTabs() {
-    const tabs = await chrome.tabs.query({ url: '*://music.youtube.com/*' });
+const PLAYER_URLS = [
+    '*://music.youtube.com/*',
+    '*://open.spotify.com/*',
+    '*://play.spotify.com/*',
+    '*://music.apple.com/*'
+];
+
+async function queryPlayerTabs() {
+    const chunks = await Promise.all(PLAYER_URLS.map((url) => chrome.tabs.query({ url })));
+    return chunks.flat();
+}
+
+async function injectIntoPlayerTabs() {
+    const tabs = await queryPlayerTabs();
     for (const tab of tabs) {
         try {
             await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
-                files: ['defaults.js', 'content.js']
+                files: ['defaults.js', 'hosts.js', 'content.js']
             });
         } catch (_) { /* tab may not allow scripting yet */ }
     }
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-    injectIntoYtmTabs();
+    injectIntoPlayerTabs();
 });
 
-function broadcastToYtm(message) {
-    chrome.tabs.query({ url: '*://music.youtube.com/*' }, (tabs) => {
-        for (const tab of tabs) {
-            chrome.tabs.sendMessage(tab.id, message).catch(() => {});
-        }
+function broadcastToPlayers(message) {
+    PLAYER_URLS.forEach((url) => {
+        chrome.tabs.query({ url }, (tabs) => {
+            for (const tab of tabs) {
+                chrome.tabs.sendMessage(tab.id, message).catch(() => {});
+            }
+        });
     });
 }
 
@@ -148,7 +162,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     if (msg.type === 'ENGINE_READY') {
         engineOn = true;
-        broadcastToYtm(msg);
+        broadcastToPlayers(msg);
         return false;
     }
 
@@ -157,12 +171,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             engineOn = false;
             capturingTabId = null;
         }
-        broadcastToYtm(msg);
+        broadcastToPlayers(msg);
         return false;
     }
 
     if (msg.type === 'METER') {
-        broadcastToYtm(msg);
+        broadcastToPlayers(msg);
         return false;
     }
 
@@ -203,14 +217,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             let stale = true;
             try {
                 const ping = await chrome.tabs.sendMessage(tabId, { type: 'PING_UI' });
-                stale = !ping || ping.version !== '2.2.7';
+                stale = !ping || ping.version !== '2.2.8';
             } catch (_) {
                 stale = true;
             }
             if (stale) {
                 await chrome.scripting.executeScript({
                     target: { tabId },
-                    files: ['defaults.js', 'content.js']
+                    files: ['defaults.js', 'hosts.js', 'content.js']
                 });
             }
             await chrome.tabs.sendMessage(tabId, { type: 'OPEN_OVERLAY' });

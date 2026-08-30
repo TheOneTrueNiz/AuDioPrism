@@ -2,7 +2,7 @@
 
 const PREVIEW = typeof window !== 'undefined' && window.PRISM_PREVIEW === true;
 const STORAGE_KEY = 'prismStateV22';
-const PRISM_UI_VERSION = '2.2.7';
+const PRISM_UI_VERSION = '2.2.8';
 
 if (!PREVIEW && window.__PRISM_BOOTED__ === PRISM_UI_VERSION) {
     // This exact UI is already live in this tab.
@@ -1066,15 +1066,8 @@ function stopFlowClock() {
 }
 
 function scrapeNowPlaying() {
-    const bar = document.querySelector('ytmusic-player-bar');
-    const titleEl = (bar && bar.querySelector('.title')) || document.querySelector('yt-formatted-string.title.ytmusic-player-bar');
-    const artistEl = (bar && bar.querySelector('.byline')) || document.querySelector('.byline.ytmusic-player-bar');
-    const imgEl = (bar && (bar.querySelector('img.image') || bar.querySelector('img'))) || null;
-    return {
-        title: ((titleEl && titleEl.textContent) || '').trim() || 'YouTube Music',
-        artist: ((artistEl && artistEl.textContent) || '').trim(),
-        art: (imgEl && imgEl.src) || ''
-    };
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.scrape) return prismPlayer.scrape();
+    return { title: 'YouTube Music', artist: '', art: '' };
 }
 
 function parseClock(s) {
@@ -1095,7 +1088,8 @@ function formatClock(sec) {
 }
 
 function ytmMedia() {
-    const videos = document.querySelectorAll('video');
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.mediaEl) return prismPlayer.mediaEl();
+    const videos = document.querySelectorAll('video, audio');
     let best = null;
     for (let i = 0; i < videos.length; i++) {
         const v = videos[i];
@@ -1107,13 +1101,10 @@ function ytmMedia() {
 }
 
 function scrapeTiming() {
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.timing) return prismPlayer.timing();
     const v = ytmMedia();
     if (v) return { current: v.currentTime || 0, duration: v.duration };
-    const el = document.querySelector('ytmusic-player-bar .time-info, .time-info.ytmusic-player-bar, .time-info');
-    const raw = ((el && el.textContent) || '').replace(/\s+/g, ' ');
-    const m = raw.match(/(\d+:\d+(?::\d+)?)\s*\/\s*(\d+:\d+(?::\d+)?)/);
-    if (!m) return { current: 0, duration: 0 };
-    return { current: parseClock(m[1]), duration: parseClock(m[2]) };
+    return { current: 0, duration: 0 };
 }
 
 function renderTiming(t) {
@@ -1130,6 +1121,11 @@ function renderTiming(t) {
 }
 
 function ytmSeekRatio(ratio) {
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.seek) {
+        prismPlayer.seek(ratio);
+        renderTiming(scrapeTiming());
+        return;
+    }
     const v = ytmMedia();
     if (!v || !isFinite(v.duration) || v.duration <= 0) return;
     const t = Math.max(0, Math.min(1, ratio)) * v.duration;
@@ -1137,75 +1133,21 @@ function ytmSeekRatio(ratio) {
     renderTiming({ current: t, duration: v.duration });
 }
 
-const YTM_SEL = {
-    play: [
-        'ytmusic-player-bar #play-pause-button',
-        'ytmusic-player-bar .play-pause-button',
-        '#play-pause-button',
-        'tp-yt-paper-icon-button#play-pause-button',
-        'yt-icon-button#play-pause-button'
-    ],
-    prev: [
-        'ytmusic-player-bar .previous-button',
-        'ytmusic-player-bar #previous-button',
-        '.previous-button',
-        'tp-yt-paper-icon-button.previous-button',
-        'yt-icon-button.previous-button'
-    ],
-    next: [
-        'ytmusic-player-bar .next-button',
-        'ytmusic-player-bar #next-button',
-        '.next-button',
-        'tp-yt-paper-icon-button.next-button',
-        'yt-icon-button.next-button'
-    ]
-};
-
-function ytmQuery(selectors) {
-    for (let i = 0; i < selectors.length; i++) {
-        const el = document.querySelector(selectors[i]);
-        if (el) return el;
-    }
-    return null;
-}
-
-function ytmClick(selectors) {
-    const el = ytmQuery(selectors);
-    if (!el) return false;
-    const root = el.shadowRoot;
-    const inner = root && root.querySelector('#button, button, [role="button"]');
-    (inner || el).click();
-    return true;
-}
-
 function ytmIsPlaying() {
-    const videos = document.querySelectorAll('video');
-    for (let i = 0; i < videos.length; i++) {
-        const v = videos[i];
-        if (!v) continue;
-        if (!v.paused && !v.ended && (v.readyState > 0 || v.currentTime > 0)) return true;
-    }
-    const btn = ytmQuery(YTM_SEL.play);
-    const label = btn
-        ? [btn.getAttribute('aria-label'), btn.getAttribute('title')].filter(Boolean).join(' ')
-        : '';
-    return /pause/i.test(label);
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.isPlaying) return prismPlayer.isPlaying();
+    return false;
 }
 
 function ytmPlayPause() {
-    if (ytmClick(YTM_SEL.play)) return;
-    const v = document.querySelector('video');
-    if (!v) return;
-    if (v.paused) v.play().catch(() => {});
-    else v.pause();
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.playPause) prismPlayer.playPause();
 }
 
 function ytmPrev() {
-    ytmClick(YTM_SEL.prev);
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.prev) prismPlayer.prev();
 }
 
 function ytmNext() {
-    ytmClick(YTM_SEL.next);
+    if (typeof prismPlayer !== 'undefined' && prismPlayer.next) prismPlayer.next();
 }
 
 function syncPlayButton() {
@@ -1222,14 +1164,16 @@ let playBtnObs = null;
 let playBtnWatched = null;
 
 function bindYtmPlaybackWatch() {
-    document.querySelectorAll('video').forEach((v) => {
+    document.querySelectorAll('video, audio').forEach((v) => {
         if (watchedVideos.has(v)) return;
         watchedVideos.add(v);
         ['play', 'pause', 'ended', 'playing', 'seeked', 'timeupdate'].forEach((ev) => {
             v.addEventListener(ev, ev === 'timeupdate' ? () => renderTiming(scrapeTiming()) : syncPlayButton);
         });
     });
-    const btn = ytmQuery(YTM_SEL.play);
+    const btn = (typeof prismPlayer !== 'undefined' && prismPlayer.playButton)
+        ? prismPlayer.playButton()
+        : null;
     if (!btn || btn === playBtnWatched) return;
     playBtnWatched = btn;
     if (playBtnObs) playBtnObs.disconnect();
@@ -2193,7 +2137,7 @@ if (PREVIEW) {
         formatValue, toNorm, fromNorm, onMeter, TOGGLE_MAP, PRESETS,
         ytmPlayPause, ytmPrev, ytmNext, ytmIsPlaying, syncPlayButton,
         scrapeTiming, renderTiming, ytmSeekRatio, formatClock,
-        applyFabPos
+        applyFabPos, prismPlayer: typeof prismPlayer !== 'undefined' ? prismPlayer : null
     };
 }
 

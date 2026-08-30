@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AuDioPrism",
-  "version": "2.2.7",
-  "description": "8D Spatial Audio & Neuro-Acoustic Focus Engine for YouTube Music",
+  "version": "2.2.8",
+  "description": "8D Spatial Audio & Neuro-Acoustic Focus Engine for YouTube Music, Spotify, and Apple Music",
   "icons": {
     "128": "icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png"
   },
@@ -16,8 +16,13 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://music.youtube.com/*"],
-      "js": ["defaults.js", "content.js"]
+      "matches": [
+        "*://music.youtube.com/*",
+        "*://open.spotify.com/*",
+        "*://play.spotify.com/*",
+        "*://music.apple.com/*"
+      ],
+      "js": ["defaults.js", "hosts.js", "content.js"]
     }
   ],
   "permissions": [
@@ -31,7 +36,9 @@
   ],
   "host_permissions": [
     "https://music.youtube.com/*",
-    "https://www.googleapis.com/*"
+    "https://open.spotify.com/*",
+    "https://play.spotify.com/*",
+    "https://music.apple.com/*"
   ],
   "oauth2": {
     "client_id": "YOUR_CLIENT_ID_HERE.apps.googleusercontent.com",
@@ -46,7 +53,12 @@
         "icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png",
         "icons/prism-icon.png"
       ],
-      "matches": ["*://music.youtube.com/*"]
+      "matches": [
+        "*://music.youtube.com/*",
+        "*://open.spotify.com/*",
+        "*://play.spotify.com/*",
+        "*://music.apple.com/*"
+      ]
     }
   ]
 }

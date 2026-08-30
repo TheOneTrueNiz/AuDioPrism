@@ -10,7 +10,7 @@ const setStatus = (msg, kind = '') => {
   if (!hintEl || kind === 'error') return;
   hintEl.textContent = kind === 'live'
     ? 'Closing the mixer does not stop processing.'
-    : 'Open YouTube Music, then start the engine.';
+    : 'Open YouTube Music, Spotify, or Apple Music in this tab.';
 };
 
 async function activeTab() {
@@ -28,7 +28,11 @@ async function refreshState() {
   }
 }
 
-const UI_VERSION = '2.2.7';
+const UI_VERSION = '2.2.8';
+
+function isPlayerTab(url) {
+  return /music\.youtube\.com|open\.spotify\.com|play\.spotify\.com|music\.apple\.com/.test(url || '');
+}
 
 async function openMixerOnTab(tab) {
   let stale = true;
@@ -41,7 +45,7 @@ async function openMixerOnTab(tab) {
   if (stale) {
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      files: ['defaults.js', 'content.js']
+      files: ['defaults.js', 'hosts.js', 'content.js']
     });
   }
   await chrome.tabs.sendMessage(tab.id, { type: 'OPEN_OVERLAY' });
@@ -50,8 +54,8 @@ async function openMixerOnTab(tab) {
 document.getElementById('btnStart').addEventListener('click', async () => {
   try {
     const tab = await activeTab();
-    if (!tab || !tab.url || !tab.url.includes('music.youtube.com')) {
-      setStatus('Open YouTube Music first', 'error');
+    if (!tab || !isPlayerTab(tab.url)) {
+      setStatus('Open a music tab first', 'error');
       return;
     }
     await openMixerOnTab(tab);

@@ -78,6 +78,7 @@
     };
   </script>
   <script src="defaults.js"></script>
+  <script src="hosts.js"></script>
   <script src="content.js"></script>
   <script>
     (function runTests() {
@@ -242,6 +243,9 @@
       ok('brackets skip tracks', prevHits === 2 && nextHits === 2, prevHits + '/' + nextHits);
 
       ok('now title scrape', P.shadow.getElementById('now-title').textContent === 'Preview Track');
+      ok('host is ytm', P.prismPlayer && P.prismPlayer.detect() === 'ytm', P.prismPlayer && P.prismPlayer.detect());
+      ok('host supports spotify url', P.prismPlayer.supportedUrl('https://open.spotify.com/track/abc'));
+      ok('host supports apple url', P.prismPlayer.supportedUrl('https://music.apple.com/us/album/x'));
       ok('track time scrape', (P.shadow.getElementById('now-time').textContent || '').indexOf('0:58') !== -1, P.shadow.getElementById('now-time').textContent);
       ok('seek bar', !!P.shadow.getElementById('track-progress') && !!P.shadow.getElementById('track-progress-fill'));
       const kbd = P.shadow.getElementById('kbd-hint');

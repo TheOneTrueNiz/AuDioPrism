@@ -1,8 +1,16 @@
 # AuDioPrism
 
-**AuDioPrism** (or simply **Prism**) is a free, open-source Chrome extension that turns YouTube Music into a neurodivergent-friendly listening space. Click-free 8D spatial audio, binaural beats, isochronic tones, masking noise, and sensory EQ — built for ADHD, autism, AuDHD, and anyone whose nervous system needs the mix to cooperate.
+**AuDioPrism** (or simply **Prism**) is a free, open-source Chrome extension that turns a music tab into a neurodivergent-friendly listening space. Click-free 8D spatial audio, binaural beats, isochronic tones, masking noise, and sensory EQ — built for ADHD, autism, AuDHD, and anyone whose nervous system needs the mix to cooperate.
 
-It is GPL-3.0. No subscription. Headphones recommended. YouTube Music only.
+It is GPL-3.0. No subscription. Headphones recommended.
+
+Works in Chrome on the **web players**:
+
+- [YouTube Music](https://music.youtube.com)
+- [Spotify Web](https://open.spotify.com)
+- [Apple Music Web](https://music.apple.com)
+
+Desktop apps, phone apps, and Spotify Connect devices in another room are out of scope. Playback has to be happening **in that Chrome tab**.
 
 > "Bad audio is a hate crime." — Every module is tuned for quality first, then for regulation.
 
@@ -42,15 +50,15 @@ Chrome, Manifest V3. This repository **is** the unpacked extension — `manifest
 4. Click **Load unpacked**.
 5. Select **this folder** — the one that contains `manifest.json`.
 
-Open [music.youtube.com](https://music.youtube.com), play a track, then **Open mixer** from the toolbar popup.
+Open YouTube Music, Spotify Web, or Apple Music Web, play a track, then **Open mixer** from the toolbar popup.
 
-If the mixer looks like an old build after you reload the extension, refresh the YouTube Music tab so the content script updates.
+If the mixer looks like an old build after you reload the extension, refresh the music tab so the content script updates.
 
 ---
 
 ## How to use
 
-1. Start a track on YouTube Music.
+1. Start a track in a supported web player tab.
 2. Click the AuDioPrism icon in the toolbar → **Open mixer**.
 3. A glass launcher appears on the page. **Click** it to start processing. **Drag** it out of the way if it covers a row.
 4. Close the mixer with **X**, **Esc**, or the dimmed edge. Audio keeps running.
@@ -178,8 +186,8 @@ UI is a Shadow DOM overlay. The engine lives in an offscreen document so closing
 | `offscreen` | Keep the engine alive with the mixer closed |
 | `scripting` | Inject / refresh the mixer on the tab |
 | `storage` | Mixer state and launcher position |
-| `tabs` / `activeTab` | Talk to the YouTube Music tab |
-| `music.youtube.com` | This product does not run anywhere else |
+| `tabs` / `activeTab` | Talk to the music tab |
+| host access | YouTube Music, Spotify Web, Apple Music Web |
 
 ---
 
@@ -192,6 +200,7 @@ background.js          capture / offscreen lifecycle
 offscreen.html         engine document
 audio-engine.js        DSP
 spatial-motion.js      8D paths (unit-tested)
+hosts.js               YouTube Music / Spotify / Apple Music adapters
 content.js             mixer UI
 popup.html / popup.js  toolbar popup
 preview.html           UI harness (open in Chrome)
