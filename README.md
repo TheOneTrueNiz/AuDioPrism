@@ -1,8 +1,8 @@
 # AuDioPrism
 
-**AuDioPrism** (or simply **Prism**) is a free, open-source Chrome extension that turns YouTube Music into a neurodivergent-friendly listening space. 8D spatial audio, binaural beats, isochronic tones, masking noise, and sensory EQ — built for ADHD, autism, AuDHD, and anyone whose nervous system needs the mix to cooperate.
+**AuDioPrism** (or simply **Prism**) is a free, open-source Chrome extension that turns YouTube Music into a neurodivergent-friendly listening space. Click-free 8D spatial audio, binaural beats, isochronic tones, masking noise, and sensory EQ — built for ADHD, autism, AuDHD, and anyone whose nervous system needs the mix to cooperate.
 
-It is GPL-3.0. No subscription. If someone is charging monthly for this class of tool, they can. We would rather ship it to the community.
+It is GPL-3.0. No subscription. Headphones recommended. YouTube Music only.
 
 > "Bad audio is a hate crime." — Every module is tuned for quality first, then for regulation.
 
@@ -13,297 +13,196 @@ It is GPL-3.0. No subscription. If someone is charging monthly for this class of
 ![AuDioPrism mixer on YouTube Music](screenshots/mixer.png)
 ![AuDioPrism launcher on a YouTube Music playlist](screenshots/launcher.png)
 
-## Features
-
-### 8D Spatial Audio Engine
-
-The core of Prism is a click-free 8D spatializer: equal-power level difference, interaural time difference (~0.66 ms), and contralateral head-shadow filtering. That combination still reads as motion around the head without the zipper noise Chrome's HRTF kernels add when the source moves.
-
-**Movement Patterns:**
-
-| Pattern | Description | Best For |
-|---------|-------------|----------|
-| **Sine Orbit** | Classic circular movement around your head with subtle elevation changes | General listening, the signature "8D" experience |
-| **Ping-pong** | Hard L/R jumps | Bilateral snaps, high stimulation |
-| **Figure 8** | Lemniscate that crosses in front of you twice per cycle | Bilateral stimulation, EMDR-like benefits |
-| **Pendulum** | Hangs at each ear, then swings | Slow rocking |
-| **Tumble** | Corkscrew: L/R and elevation are 90° apart, so the image rolls *over* your head at each center crossing | Deep immersion |
-| **Breathe** | Almost no L/R — the source moves closer (louder, brighter) and farther (quieter, darker) | Calm regulation, less seasick |
-| **Drift** | Irregular wander from value noise, not a stacked-sine orbit | Ambient listening, reduced predictability |
-
-**Controls:**
-- **Speed** (0.01 - 5 Hz): How fast the sound moves around you
-- **Depth** (0 - 1): How far from center the sound travels
-
-### Binaural Beats
-
-Binaural beats work by playing slightly different frequencies in each ear. Your brain perceives a "third tone" at the difference frequency, which can encourage brainwave entrainment.
-
-**How It Works:**
-- Left ear receives a carrier tone (e.g., 200 Hz)
-- Right ear receives carrier + beat frequency (e.g., 210 Hz)
-- Your brain perceives a 10 Hz "beat" (Alpha waves)
-
-**Brainwave Frequencies:**
-
-| Frequency | State | Effect |
-|-----------|-------|--------|
-| **40 Hz** (Gamma) | High cognition | Focus, memory, problem-solving |
-| **14 Hz** (Beta) | Active thinking | Concentration, alertness |
-| **10 Hz** (Alpha) | Relaxed focus | Calm attention, creativity |
-| **6 Hz** (Theta) | Deep relaxation | Meditation, introspection |
-
-**Technical Implementation:**
-- Carrier frequency: 200 Hz (research-optimal for perception)
-- Pure sine waves for clean beat perception
-- Mixed at -22 dB below music (non-destructive)
-- Requires headphones for the effect to work
-
-### Isochronic Tones
-
-Isochronic tones are rhythmic pulses of sound that turn on and off at precise intervals. Unlike binaural beats, they don't require headphones and produce stronger cortical responses in many people.
-
-**How It Works:**
-- A carrier tone (220 Hz) pulses on and off
-- The pulse rate matches your target brainwave frequency
-- Sharp transitions create stronger entrainment
-
-**Controls:**
-- **Frequency** (1 - 20 Hz): Pulse rate targeting specific brainwaves
-- **Depth** (0 - 1): How complete the silence between pulses is
-- **Waveform**: Sine (gentler) or Square (sharper entrainment)
-
-**Technical Implementation:**
-- Proper AM synthesis with DC offset for clean 0-to-1 pulses
-- Mixed at -18 dB below music
-- Works through speakers (no headphones required)
-
-### Masking Noise Generator
-
-Background noise can help mask distracting environmental sounds and provide a consistent auditory backdrop for focus.
-
-**Noise Colors:**
-- **Brown** (0): Deep, rumbling — like thunder or a waterfall
-- **Pink** (0.5): Balanced — like steady rain
-- **White** (1): Bright, hissy — like radio static
-
-The Color knob smoothly sweeps between these by adjusting a lowpass filter from 80 Hz to 20 kHz.
-
-### Stereo Field Processing
-
-Adjust the stereo width of your music using Mid-Side processing.
-
-- **Width** (0 - 2x): 0 = mono, 1 = normal, 2 = extra wide
-- **Amount**: Cross-feed intensity for the width effect
-
-### Dynamics Processing
-
-**Compressor ("Dynamic Shield"):**
-Protects your ears from sudden loud moments by automatically reducing volume spikes.
-
-- **Threshold**: Level where compression begins (-50 to 0 dB)
-- **Ratio**: How much to reduce signals above threshold (1:1 to 20:1)
-- **Attack**: How quickly compression responds (0 - 100 ms)
-
-### Harmonics (Saturation)
-
-Adds subtle harmonic distortion for warmth and presence.
-
-- **Drive**: Amount of saturation (0 - 100%)
-- **Warmth**: Lowpass filter to tame harsh harmonics (dark to bright)
-
-### Sensory EQ
-
-A sweepable lowpass filter for sensory regulation. Useful for reducing harsh high frequencies that can cause discomfort.
-
-- **Frequency** (200 Hz - 20 kHz): Filter cutoff point
-- **Resonance** (0 - 10): Emphasis at the cutoff frequency
-
-### Master Console
-
-- **Music Volume**: Main music level (0 - 150%)
-- **FX Volume**: Binaural/Isochronic/Noise level (0 - 150%)
-- **3-Band EQ**: Low shelf (250 Hz), Mid peak (1 kHz), High shelf (4 kHz)
-
 ---
 
-## The Science: Neurodivergent-Friendly Audio
+## What you get
 
-### Why 8D Audio Helps
+A glass mixer that sits on YouTube Music without replacing the player.
 
-For people with ADHD, autism, or sensory processing differences:
+- **8D spatial** — stereo-preserving motion (ILD + ~0.66 ms ITD + far-ear head-shadow). No HRTF hops, so it does not zipper when the image moves.
+- **Seven paths** that actually differ: Orbit, Ping-pong, Figure-8, Pendulum, Tumble (rolls over the head), Breathe (near/far, almost no L/R), Drift (irregular wander).
+- **Beat-sync** locks 8D motion to the song tempo when a BPM is detected.
+- **Hold A/B** to hear the unprocessed track.
+- **Now-playing bar** with prev / play-pause / next, real track time, click-to-seek, BPM, and a flow timer. Those clicks hit YouTube Music’s own player, so the queue stays honest.
+- **Draggable launcher** on the page. Click opens the mixer. Drag parks it. Position is remembered.
+- **Presets:** Focus, Relax, Sensory, Sleep, Clean.
+- **Closing the mixer does not stop the engine.** Power button or the popup Stop does.
 
-1. **Reduced Ear Fatigue**: Static stereo can become fatiguing. Movement keeps the listening experience fresh.
-2. **Increased Engagement**: The spatial movement provides subtle stimulation that can help maintain focus.
-3. **Bilateral Stimulation**: The Figure-8 pattern mimics bilateral stimulation used in EMDR therapy.
-
-### Why Binaural Beats Help
-
-Research suggests binaural beats may:
-- Reduce anxiety (Alpha/Theta frequencies)
-- Improve focus and attention (Beta/Gamma frequencies)
-- Support meditation practices (Theta frequencies)
-
-*Note: Effects vary between individuals. Binaural beats are a tool, not a treatment.*
-
-### Why Isochronic Tones Help
-
-For neurodivergent users, isochronic tones can:
-- Provide external rhythmic scaffolding for the brain
-- Help maintain task engagement through steady sensory input
-- Work without headphones (important for sensory sensitivities)
-
-### Non-Destructive Mixing Philosophy
-
-All supplementary audio (binaural, isochronic, noise) is mixed **beneath** the music at carefully calibrated levels:
-
-| Source | Level | Reason |
-|--------|-------|--------|
-| Binaural Beats | -22 dB | Subliminal but effective |
-| Isochronic Tones | -18 dB | Audible pulse, not overpowering |
-| Masking Noise | -26 dB | Background texture only |
-
-This ensures the music remains the primary experience while the therapeutic tones work subtly alongside it.
+Boot is music-first: 8D Orbit on, width on, dynamics on, sensory filter at 12 kHz, extra tones off.
 
 ---
 
 ## Installation
 
-This extension is built for **Google Chrome** (Manifest V3). This repository *is* the unpacked extension — `manifest.json` is at the repo root.
+Chrome, Manifest V3. This repository **is** the unpacked extension — `manifest.json` is at the repo root.
 
 1. Clone this repository (or download the ZIP and unpack it).
-2. Open Chrome and go to `chrome://extensions/`.
+2. Open `chrome://extensions/`.
 3. Enable **Developer mode**.
 4. Click **Load unpacked**.
 5. Select **this folder** — the one that contains `manifest.json`.
 
-If the mixer UI looks old after a reload, refresh the YouTube Music tab so the content script actually updates.
+Open [music.youtube.com](https://music.youtube.com), play a track, then **Open mixer** from the toolbar popup.
 
-## How to Use
+If the mixer looks like an old build after you reload the extension, refresh the YouTube Music tab so the content script updates.
 
-1. Open [music.youtube.com](https://music.youtube.com) and start playing a track.
-2. Click the **AuDioPrism icon** in the Chrome toolbar.
-3. Click **Open mixer**.
-4. A glass launcher appears on the page. **Click** it to start the engine / open the mixer. **Drag** it anywhere — the position is remembered.
-5. Close the mixer (X, Esc, or the dimmed edge) to get YouTube Music back — processing keeps running. Stop the engine from the power button or the popup.
-6. **Use headphones** for binaural beats and optimal 8D.
+---
 
-The now-playing bar has **previous / play-pause / next**, real track time, and a seek bar. Those drive YouTube Music's player, so the queue, scrobble, and media keys stay in sync. **?** opens the shortcut list. With the mixer open:
+## How to use
+
+1. Start a track on YouTube Music.
+2. Click the AuDioPrism icon in the toolbar → **Open mixer**.
+3. A glass launcher appears on the page. **Click** it to start processing. **Drag** it out of the way if it covers a row.
+4. Close the mixer with **X**, **Esc**, or the dimmed edge. Audio keeps running.
+5. Stop processing from the power button or **Stop engine** in the popup.
+
+Headphones for binaural beats and the full 8D image. Isochronic tones and masking still work on speakers.
+
+### Shortcuts (mixer open)
 
 | Key | Action |
 |-----|--------|
 | **Space** | Play / pause |
-| **[** | Previous track |
-| **]** | Next track |
+| **[** **]** | Previous / next track |
 | **A** (hold) | Dry compare |
 | **S** | Beat-sync 8D |
-| **1–5** | Presets |
+| **1–5** | Focus, Relax, Sensory, Sleep, Clean |
+| **?** | Shortcut list |
 | **Esc** | Close mixer (engine keeps running) |
 
-### Quick Start Recommendations
+### Presets
 
-**For Focus (ADHD):**
-- 8D: Sine Orbit, Speed 0.15 Hz, Depth 0.8
-- Binaural: 40 Hz Gamma or 14 Hz Beta
-- Dynamics: ON (Threshold -20 dB)
-
-**For Relaxation:**
-- 8D: Drift, Speed 0.08 Hz, Depth 0.6
-- Binaural: 10 Hz Alpha or 6 Hz Theta
-- Masking: Brown noise at low level
-
-**For Sensory Overload:**
-- Sensory EQ: Reduce Freq to 8-12 kHz
-- Dynamics: ON (aggressive settings)
-- 8D: OFF or very slow
+| Chip | Intent |
+|------|--------|
+| **Focus** | Faster orbit, gamma binaural, dynamics on |
+| **Relax** | Slow Drift, alpha, a little brown noise |
+| **Sensory** | 8D off, darker highs, compression, masking |
+| **Sleep** | Slow Drift, theta, darker filter |
+| **Clean** | Everything off — dry YouTube Music through the engine |
 
 ---
 
-## Technical Architecture
+## Mixer
 
-### Audio Signal Flow
+### 8D Spatial
+
+Equal-power level difference, interaural time, and contralateral high-shelf. Distance also changes level, so Breathe is a real near/far pump, not a brightness wobble.
+
+| Pattern | What it does |
+|---------|----------------|
+| **Orbit** | Smooth circle, the classic 8D path |
+| **Ping-pong** | Hard L/R |
+| **Figure-8** | Crosses in front of you twice per cycle |
+| **Pendulum** | Hangs at each ear, then swings |
+| **Tumble** | L/R and elevation 90° apart — rolls *over* the head at center |
+| **Breathe** | Almost no pan. Near = louder/brighter, far = quieter/darker |
+| **Drift** | Value-noise wander, not a stacked-sine orbit |
+
+**Speed** 0.02–2 Hz. **Depth** 0–1. Beat-sync scales that motion to the detected tempo.
+
+### Stereo field
+
+Mid-side width (0 = mono, 1 = natural, 2 = extra wide) plus cross-feed amount.
+
+### Dynamics
+
+Compressor for sudden spikes. Threshold −50 to 0 dB, ratio 1:1 to 20:1, attack 0–100 ms.
+
+### Binaural
+
+Different sine tones in each ear. Headphones required. Mixed under the music.
+
+| Beat | Band | Typical use |
+|------|------|-------------|
+| 40 Hz | Gamma | Focus |
+| 14 Hz | Beta | Alert |
+| 10 Hz | Alpha | Relax |
+| 6 Hz | Theta | Deep / sleep |
+
+### Isochronic
+
+A pulsing carrier. Headphones not required. Sine (gentler) or square (sharper).
+
+### Masking
+
+Brown → pink → white via the Color knob (lowpass 80 Hz–20 kHz).
+
+### Harmonics
+
+Soft saturation. Drive and warmth.
+
+### Sensory EQ
+
+Sweepable lowpass for harsh highs. Frequency 200 Hz–20 kHz, resonance 0.1–8.
+
+### Master
+
+Music / FX faders (0–150%) and a 3-band EQ (low shelf, mid peak, high shelf).
+
+FX (binaural, isochronic, noise) sit **under** the music and do **not** go through 8D.
+
+---
+
+## Why this shape of mix
+
+Static stereo can fatigue. Slow spatial motion is a gentle form of novelty. Figure-8 is bilateral. Breathe is for people who want regulation without the image flying around their head.
+
+Binaural and isochronic tones are **tools, not treatment**. Effects vary. If a setting makes you worse, turn it off — Clean is one click.
+
+---
+
+## Architecture
 
 ```
-YouTube Music Audio
-        │
+YouTube Music tab
+        │  tabCapture
         ▼
-   [Music Gain] ──► [Stereo Widener] ──► [3-Band EQ]
-        │                                      │
-        │                                      ▼
-        │                              [Sensory Filter]
-        │                                      │
-        │                                      ▼
-        │                              [Saturation]
-        │                                      │
-        │                                      ▼
-        │                              [Compressor]
-        │                                      │
-        │                                      ▼
-        │                              [8D Spatial Panner]
-        │                                      │
-        ▼                                      ▼
-   [FX Gain] ◄── Binaural ──────────────► [Master Gain]
-        │       Isochronic                     │
-        │       Noise                          ▼
-        │                                 [Limiter]
-        │                                      │
-        └──────────────────────────────────────┘
-                                               │
-                                               ▼
-                                          [Output]
+Offscreen AudioContext (playback latency)
+        │
+        ├─ music ─► widener ─► EQ ─► sensory ─► sat ─► compressor ─► 8D ─► master
+        │                                                                  │
+        └─ FX (binaural / iso / noise) ────────────────────────────────────┤
+                                                                           ▼
+                                                              limiter → output
 ```
 
-### Key Technologies
+A/B dry is a short equal-power bypass of the processed path, not a graph teardown.
 
-- **Web Audio API**: All processing uses native browser audio nodes
-- **Smooth 8D**: Equal-power ILD + ITD + head-shadow, scheduled on the audio clock
-- **Offscreen Document**: Audio processing runs in isolated context for stability
-- **Shadow DOM**: UI is encapsulated to avoid conflicts with YouTube Music
+UI is a Shadow DOM overlay. The engine lives in an offscreen document so closing the mixer does not recapture or click.
 
 ### Permissions
 
-| Permission | Purpose |
-|------------|---------|
-| `tabCapture` | Capture audio from YouTube Music tab |
-| `offscreen` | Run audio engine in background document |
-| `scripting` | Inject control panel UI |
-| `music.youtube.com` | Restrict to YouTube Music only |
+| Permission | Why |
+|------------|-----|
+| `tabCapture` | Hear the YouTube Music tab |
+| `offscreen` | Keep the engine alive with the mixer closed |
+| `scripting` | Inject / refresh the mixer on the tab |
+| `storage` | Mixer state and launcher position |
+| `tabs` / `activeTab` | Talk to the YouTube Music tab |
+| `music.youtube.com` | This product does not run anywhere else |
 
 ---
 
-## Project Structure
+## Layout of this repo
 
 ```
-├── manifest.json        # MV3 extension config (load this folder)
-├── defaults.js          # Shared boot patch (mixer + engine)
-├── background.js        # Service worker / capture lifecycle
-├── offscreen.html       # Audio engine document
-├── audio-engine.js      # DSP: 8D, binaural, isochronic, etc.
-├── spatial-motion.js    # 8D path math (tumble / breathe / drift)
-├── content.js           # Mixer UI (Shadow DOM)
-├── popup.html/.js       # Toolbar popup
-├── icons/
-└── screenshots/
+manifest.json          load this folder in chrome://extensions
+defaults.js            shared boot patch (mixer + engine)
+background.js          capture / offscreen lifecycle
+offscreen.html         engine document
+audio-engine.js        DSP
+spatial-motion.js      8D paths (unit-tested)
+content.js             mixer UI
+popup.html / popup.js  toolbar popup
+preview.html           UI harness (open in Chrome)
+spatial-motion.test.js node spatial-motion.test.js
+icons/  screenshots/
 ```
-
----
-
-## References & Research
-
-- [MDN Web Audio API Spatialization](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Web_audio_spatialization_basics)
-- [Oster, G. (1973). Auditory beats in the brain. Scientific American](https://www.scientificamerican.com/article/auditory-beats-in-the-brain/)
-- [PMC: Effects of Binaural Beat Stimulation on Cognitive Functioning](https://pmc.ncbi.nlm.nih.gov/articles/PMC7204407/)
-- [Audioengine: ADHD and Binaural/Isochronic Comparison](https://audioengine.com/explore/adhd-and-music-how-binaural-beats-and-isochronic-tones-compare-for-better-focus/)
-- [Google Omnitone: Spatial Audio Rendering](https://github.com/GoogleChrome/omnitone)
 
 ---
 
 ## License
 
-This project is licensed under the **GNU General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
+GNU GPL v3.0 — see [LICENSE](LICENSE). Modified distributions must stay GPL-3.0.
 
-You are free to use, modify, and distribute this software under the terms of the GPL-3.0. If you distribute modified versions, they must also be open-sourced under GPL-3.0.
-
----
-
-*Built with care for neurodivergent listeners.*
+Built with care for neurodivergent listeners.
