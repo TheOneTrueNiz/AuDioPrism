@@ -2,7 +2,7 @@
 
 const PREVIEW = typeof window !== 'undefined' && window.PRISM_PREVIEW === true;
 const STORAGE_KEY = 'prismStateV22';
-const PRISM_UI_VERSION = '2.2.8';
+const PRISM_UI_VERSION = '2.2.9';
 
 if (!PREVIEW && window.__PRISM_BOOTED__ === PRISM_UI_VERSION) {
     // This exact UI is already live in this tab.

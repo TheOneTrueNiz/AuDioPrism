@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AuDioPrism",
-  "version": "2.2.8",
-  "description": "8D Spatial Audio & Neuro-Acoustic Focus Engine for YouTube Music, Spotify, and Apple Music",
+  "version": "2.2.9",
+  "description": "8D spatial audio mixer for YouTube Music, Spotify and Apple Music tabs. Runs entirely in your browser.",
   "icons": {
     "128": "icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png"
   },
@@ -22,7 +22,11 @@
         "*://play.spotify.com/*",
         "*://music.apple.com/*"
       ],
-      "js": ["defaults.js", "hosts.js", "content.js"]
+      "js": [
+        "defaults.js",
+        "hosts.js",
+        "content.js"
+      ]
     }
   ],
   "permissions": [
@@ -31,8 +35,7 @@
     "tabs",
     "activeTab",
     "scripting",
-    "storage",
-    "identity"
+    "storage"
   ],
   "host_permissions": [
     "https://music.youtube.com/*",
@@ -40,16 +43,9 @@
     "https://play.spotify.com/*",
     "https://music.apple.com/*"
   ],
-  "oauth2": {
-    "client_id": "YOUR_CLIENT_ID_HERE.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/youtube.readonly"
-    ]
-  },
   "web_accessible_resources": [
     {
       "resources": [
-        "inject.js",
         "icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png",
         "icons/prism-icon.png"
       ],

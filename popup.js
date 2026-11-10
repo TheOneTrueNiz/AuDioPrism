@@ -28,7 +28,7 @@ async function refreshState() {
   }
 }
 
-const UI_VERSION = '2.2.8';
+const UI_VERSION = '2.2.9';
 
 function isPlayerTab(url) {
   return /music\.youtube\.com|open\.spotify\.com|play\.spotify\.com|music\.apple\.com/.test(url || '');

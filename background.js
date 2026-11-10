@@ -217,7 +217,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             let stale = true;
             try {
                 const ping = await chrome.tabs.sendMessage(tabId, { type: 'PING_UI' });
-                stale = !ping || ping.version !== '2.2.8';
+                stale = !ping || ping.version !== '2.2.9';
             } catch (_) {
                 stale = true;
             }

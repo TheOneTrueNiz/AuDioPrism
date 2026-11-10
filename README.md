@@ -204,6 +204,7 @@ hosts.js               YouTube Music / Spotify / Apple Music adapters
 content.js             mixer UI
 popup.html / popup.js  toolbar popup
 preview.html           UI harness (open in Chrome)
+PRIVACY.md             privacy policy (linked from the store listing)
 spatial-motion.test.js node spatial-motion.test.js
 icons/  screenshots/
 ```
