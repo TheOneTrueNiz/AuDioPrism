@@ -4,7 +4,7 @@
   "version": "2.2.9",
   "description": "8D spatial audio mixer for YouTube Music, Spotify and Apple Music tabs. Runs entirely in your browser.",
   "icons": {
-    "128": "icons/513d19b9-d3db-435d-bd2a-c31d8b8d5097.png"
+    "128": "icons/prism-icon.png"
   },
   "action": {
     "default_title": "Launch Prism",
