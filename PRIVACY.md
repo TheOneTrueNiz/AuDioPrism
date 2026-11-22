@@ -6,7 +6,7 @@ Last updated: 2026-11-10. Applies to AuDioPrism 2.2.9 and later.
 
 ## What it touches, and what happens to it
 
-**The sound of your music tab.** When you start AuDioPrism on a YouTube Music, Spotify Web or Apple Music Web tab, Chrome hands the extension that tab's audio. The extension processes it (spatial motion, EQ, compression, optional tones and noise) and plays the result on your speakers or headphones. The audio is not recorded, not saved and not sent anywhere. Processing stops when you stop the engine or close the tab.
+**The sound of your music tab.** When you start AuDioPrism on a YouTube Music, Spotify Web or Apple Music Web tab, your browser hands the extension that tab's audio. The extension processes it (spatial motion, EQ, compression, optional tones and noise) and plays the result on your speakers or headphones. The audio is not recorded, not saved and not sent anywhere. Processing stops when you stop the engine or close the tab.
 
 **What is playing.** The mixer shows the current track's title, artist and cover picture, and its play, pause, next, previous and seek controls operate the page's own player. To do this it reads those items from the player page you have open. They are held in the page's memory while the mixer is open. They are not saved and not sent anywhere.
 
